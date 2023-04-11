@@ -13,7 +13,7 @@ class MovieController extends AbstractController
         '/movie/{slug}',
         name: 'movie_details',
         requirements: [
-            'slug' => '\w+'
+            'slug' => '[a-zA-Z0-9-_]{3,}'
         ],
         methods: ['GET']
     )]
