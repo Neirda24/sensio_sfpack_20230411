@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use function array_column;
 use function array_key_exists;
+use function array_map;
 
 /**
  * @phpstan-type RawMovieData array{slug: string, title: string, plot: string, releasedAt: string, genres: list<string>}
@@ -59,5 +60,13 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
         }
 
         return self::hydrate($slugIndexedMovies[$slug]);
+    }
+
+    /**
+     * @return list<Movie>
+     */
+    public static function list(): array
+    {
+        return array_map(self::hydrate(...), self::LIST);
     }
 }
