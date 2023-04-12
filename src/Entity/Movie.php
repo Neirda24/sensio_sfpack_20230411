@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\MovieRepository;
+use App\Validator\Constraints\Poster;
+use App\Validator\Constraints\PosterExists;
+use App\Validator\Constraints\Slug;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -28,8 +31,7 @@ class Movie
     private ?string $title = null;
 
     #[NotNull]
-    #[Length(min: 3, max: 255)]
-    #[Choice(choices: ['new'], match: false)]
+    #[Slug]
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
@@ -38,6 +40,8 @@ class Movie
     #[ORM\Column(type: Types::TEXT)]
     private ?string $plot = null;
 
+    #[NotNull]
+    #[Poster()]
     #[ORM\Column(length: 255)]
     private ?string $poster = null;
 
