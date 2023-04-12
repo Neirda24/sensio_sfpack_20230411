@@ -7,6 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
@@ -17,21 +22,30 @@ class Movie
     #[ORM\Column]
     private ?int $id = null;
 
+    #[NotNull]
+    #[Length(min: 3, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[NotNull]
+    #[Length(min: 3, max: 255)]
+    #[Choice(choices: ['new'], match: false)]
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
+    #[NotNull]
+    #[Length(min: 20)]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $plot = null;
 
     #[ORM\Column(length: 255)]
     private ?string $poster = null;
 
+    #[LessThanOrEqual('today')]
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $releasedAt = null;
 
+    #[Count(min: 1)]
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'movies')]
     private Collection $genres;
 
