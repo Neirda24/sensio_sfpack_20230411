@@ -19,6 +19,9 @@ class Genre
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    /**
+     * @var Collection<int, Movie>
+     */
     #[ORM\ManyToMany(targetEntity: Movie::class, mappedBy: 'genres')]
     private Collection $movies;
 

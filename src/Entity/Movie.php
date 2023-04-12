@@ -4,13 +4,11 @@ namespace App\Entity;
 
 use App\Repository\MovieRepository;
 use App\Validator\Constraints\Poster;
-use App\Validator\Constraints\PosterExists;
 use App\Validator\Constraints\Slug;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -49,6 +47,9 @@ class Movie
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $releasedAt = null;
 
+    /**
+     * @var Collection<int, Genre>
+     */
     #[Count(min: 1)]
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'movies')]
     private Collection $genres;

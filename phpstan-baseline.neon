@@ -1,0 +1,56 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Anonymous function should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Parameter \\$plot of class App\\\\Model\\\\Movie constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Parameter \\$poster of class App\\\\Model\\\\Movie constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Parameter \\$releasedAt of class App\\\\Model\\\\Movie constructor expects DateTimeImmutable, DateTimeImmutable\\|null given\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Parameter \\$slug of class App\\\\Model\\\\Movie constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Parameter \\$title of class App\\\\Model\\\\Movie constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Model/Movie.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\MovieRepository\\:\\:getBySlug\\(\\) should return App\\\\Entity\\\\Movie but returns mixed\\.$#"
+			count: 1
+			path: src/Repository/MovieRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\MovieRepository\\:\\:listAll\\(\\) should return array\\<int, App\\\\Entity\\\\Movie\\> but returns mixed\\.$#"
+			count: 1
+			path: src/Repository/MovieRepository.php
+
+		-
+			message: "#^Method App\\\\Validator\\\\Constraints\\\\Poster\\:\\:getConstraints\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Validator/Constraints/Poster.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method Symfony\\\\Component\\\\Validator\\\\Violation\\\\ConstraintViolationBuilderInterface\\:\\:setParameter\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/Validator/Constraints/PosterExistsValidator.php
+
+		-
+			message: "#^Method App\\\\Validator\\\\Constraints\\\\Slug\\:\\:getConstraints\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Validator/Constraints/Slug.php

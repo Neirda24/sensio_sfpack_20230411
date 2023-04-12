@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use LogicException;
 
 class MovieFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -50,8 +51,15 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
                 ->setSlug($movieData['slug'])
                 ->setPoster($movieData['poster'])
                 ->setPlot($movieData['plot'])
-                ->setReleasedAt(DateTimeImmutable::createFromFormat('!d/m/Y', $movieData['releasedAt']))
             ;
+
+            $releasedAt = DateTimeImmutable::createFromFormat('!d/m/Y', $movieData['releasedAt']);
+
+            if (false === $releasedAt) {
+                throw new LogicException('Check the date format');
+            }
+
+            $movie->setReleasedAt($releasedAt);
 
             foreach ($movieData['genres'] as $genreName) {
                 $movie->addGenre($this->getGenre($genreName));
@@ -65,6 +73,6 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
 
     private function getGenre(string $genreName): Genre
     {
-        return $this->getReference("Genre.{$genreName}");
+        return $this->getReference("Genre.{$genreName}", Genre::class);
     }
 }
