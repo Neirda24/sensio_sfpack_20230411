@@ -8,6 +8,7 @@ use App\Model\Movie;
 use App\Repository\MovieRepository;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -62,7 +63,7 @@ class MovieController extends AbstractController
         ],
         methods: ['GET', 'POST']
     )]
-    public function newOrEdit(MovieRepository $movieRepository, ?string $slug = null): Response
+    public function newOrEdit(Request $request, MovieRepository $movieRepository, ?string $slug = null): Response
     {
         $movieEntity = new MovieEntity();
 
@@ -75,6 +76,13 @@ class MovieController extends AbstractController
         }
 
         $form = $this->createForm(MovieType::class, $movieEntity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $movieRepository->save($movieEntity, true);
+
+            return $this->redirectToRoute('movie_details', ['slug' => $movieEntity->getSlug()]);
+        }
 
         return $this->render('movie/new.html.twig', [
             'form' => $form->createView(),
