@@ -1,18 +1,20 @@
 <?php
 
-declare(strict_types=1);
+namespace App\DataFixtures;
 
-namespace App\Model;
+use App\Entity\Genre;
+use App\Entity\Movie;
+use DateTimeImmutable;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
 
-/**
- * @phpstan-type RawMovieData array{slug: string, title: string, plot: string, releasedAt: string, poster: string, genres: list<string>}
- */
-final class MovieRepository
+class MovieFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
-     * @var list<RawMovieData>
+     * @var list<array{slug: string, title: string, plot: string, releasedAt: string, poster: string, genres: list<string>}>
      */
-    private const LIST = [
+    private const MOVIES = [
         [
             'slug'       => 'avatar',
             'title'      => 'avatar',
@@ -32,4 +34,37 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
             'genres'     => ['Documentary', 'Adventure', 'Comedy', 'Family'],
         ],
     ];
+
+    public function getDependencies(): array
+    {
+        return [
+            GenreFixtures::class,
+        ];
+    }
+
+    public function load(ObjectManager $manager): void
+    {
+        foreach (self::MOVIES as $movieData) {
+            $movie = (new Movie())
+                ->setTitle($movieData['title'])
+                ->setSlug($movieData['slug'])
+                ->setPoster($movieData['poster'])
+                ->setPlot($movieData['plot'])
+                ->setReleasedAt(DateTimeImmutable::createFromFormat('!d/m/Y', $movieData['releasedAt']))
+            ;
+
+            foreach ($movieData['genres'] as $genreName) {
+                $movie->addGenre($this->getGenre($genreName));
+            }
+
+            $manager->persist($movie);
+        }
+
+        $manager->flush();
+    }
+
+    private function getGenre(string $genreName): Genre
+    {
+        return $this->getReference("Genre.{$genreName}");
+    }
 }
