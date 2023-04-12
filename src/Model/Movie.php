@@ -11,6 +11,8 @@ use function array_map;
 
 final class Movie
 {
+    public const SLUG_REGEX = '[a-zA-Z0-9-_]{3,}';
+
     /**
      * @param list<string> $genres
      */

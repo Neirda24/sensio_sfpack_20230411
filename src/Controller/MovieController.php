@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Movie as MovieEntity;
 use App\Form\MovieType;
 use App\Model\Movie;
 use App\Repository\MovieRepository;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,13 +31,17 @@ class MovieController extends AbstractController
         '/movie/{slug}',
         name: 'movie_details',
         requirements: [
-            'slug' => '[a-zA-Z0-9-_]{3,}',
+            'slug' => Movie::SLUG_REGEX,
         ],
         methods: ['GET']
     )]
     public function details(MovieRepository $movieRepository, string $slug): Response
     {
-        $movie = Movie::fromEntity($movieRepository->getBySlug($slug));
+        try {
+            $movie = Movie::fromEntity($movieRepository->getBySlug($slug));
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException('Movie not found', previous: $e);
+        }
 
         return $this->render('movie/details.html.twig', [
             'movie' => $movie,
@@ -48,12 +54,30 @@ class MovieController extends AbstractController
         methods: ['GET', 'POST'],
         priority: 10
     )]
-    public function new(): Response
+    #[Route(
+        '/movie/{slug}/edit',
+        name: 'movie_edit',
+        requirements: [
+            'slug' => Movie::SLUG_REGEX,
+        ],
+        methods: ['GET', 'POST']
+    )]
+    public function newOrEdit(MovieRepository $movieRepository, ?string $slug = null): Response
     {
-        $form = $this->createForm(MovieType::class);
+        $movieEntity = new MovieEntity();
+
+        if (null !== $slug) {
+            try {
+                $movieEntity = $movieRepository->getBySlug($slug);
+            } catch (NoResultException $e) {
+                throw $this->createNotFoundException('Movie not found', previous: $e);
+            }
+        }
+
+        $form = $this->createForm(MovieType::class, $movieEntity);
 
         return $this->render('movie/new.html.twig', [
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 }
