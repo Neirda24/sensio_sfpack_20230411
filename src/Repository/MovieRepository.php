@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Movie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function debug_backtrace;
 
 /**
  * @extends ServiceEntityRepository<Movie>
@@ -49,6 +50,21 @@ class MovieRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @return list<Movie>
+     */
+    public function listAll(): array
+    {
+        $qb = $this->createQueryBuilder('movie');
+
+        $qb
+            ->join('movie.genres', 'genre')
+            ->addSelect('genre')
+        ;
+
+        return $qb->getQuery()->getResult();
     }
 
 //    /**

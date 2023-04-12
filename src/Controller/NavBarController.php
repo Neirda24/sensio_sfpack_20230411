@@ -11,7 +11,7 @@ class NavBarController extends AbstractController
 {
     public function __invoke(MovieRepository $movieRepository): Response
     {
-        $movies = Movie::fromEntities($movieRepository->findAll());
+        $movies = Movie::fromEntities($movieRepository->listAll());
 
         return $this->render('navbar.html.twig', [
             'movies' => $movies,
