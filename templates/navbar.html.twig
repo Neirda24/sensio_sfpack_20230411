@@ -1,5 +1,7 @@
 {# @var movies \App\Model\Movie[] #}
 
+{% set isCurrentRouteMovie = currentRoute starts with 'movie_' and currentRoute is not same as('movie_list') %}
+
 <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ path('homepage') }}">Home</a>
@@ -9,11 +11,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('homepage') }}">Home</a>
+                    <a class="nav-link {{ isCurrentRouteMovie ? '' : 'active' }}" href="{{ path('homepage') }}">Home</a>
                 </li>
                 {% for movie in movies %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('movie_details', {slug: movie.slug}) }}">{{ movie.title|title }}</a>
+                        <a class="nav-link {{ isCurrentRouteMovie and currentSlug is same as(movie.slug) ? 'active' : '' }}" href="{{ path('movie_details', {slug: movie.slug}) }}">{{ movie.title|title }}</a>
                     </li>
                 {% endfor %}
             </ul>

@@ -11,7 +11,10 @@
 {% block body %}
     <main>
         {% block navbar %}
-            {{ render(controller('App\\Controller\\NavBarController')) }}
+            {{ render(controller('App\\Controller\\NavBarController', {
+                currentRoute: app.request.attributes.get('_route'),
+                currentSlug: app.request.attributes.get('slug', ''),
+            })) }}
         {% endblock navbar %}
 
         {% block main %}
