@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model;
 
-use DateTimeImmutable;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use function array_column;
-use function array_key_exists;
-use function array_map;
-
 /**
  * @phpstan-type RawMovieData array{slug: string, title: string, plot: string, releasedAt: string, poster: string, genres: list<string>}
  */
@@ -38,38 +32,4 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
             'genres'     => ['Documentary', 'Adventure', 'Comedy', 'Family'],
         ],
     ];
-
-    /**
-     * @param RawMovieData $data
-     */
-    private static function hydrate(array $data): Movie
-    {
-        return new Movie(
-            slug: $data['slug'],
-            title: $data['title'],
-            plot: $data['plot'],
-            releasedAt: DateTimeImmutable::createFromFormat('d/m/Y', $data['releasedAt']),
-            poster: $data['poster'],
-            genres: $data['genres'],
-        );
-    }
-
-    public static function get(string $slug): Movie
-    {
-        $slugIndexedMovies = array_column(self::LIST, null, 'slug');
-
-        if (array_key_exists($slug, $slugIndexedMovies) === false) {
-            throw new NotFoundHttpException("Movie with slug '{$slug}' not found.");
-        }
-
-        return self::hydrate($slugIndexedMovies[$slug]);
-    }
-
-    /**
-     * @return list<Movie>
-     */
-    public static function list(): array
-    {
-        return array_map(self::hydrate(...), self::LIST);
-    }
 }
