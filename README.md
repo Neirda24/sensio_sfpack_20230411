@@ -10,7 +10,14 @@ Install
 =======
 
 1. clone the repository
-2. Run the following commands :
+2. Create a `.env.local` file with the following content
+```dotenv
+###> symfony/http-client ###
+OMDB_API_KEY="XXXXXXX"
+###< symfony/http-client ###
+```
+with `XXXXXXX` being the API Key from https://www.omdbapi.com/apikey.aspx
+3. Run the following commands :
 
 ```bash
 $ symfony composer install
