@@ -4,6 +4,8 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            string $posterAssetsPath: '%kernel.project_dir%/assets/images/movies'
 
     App\:
         resource: '../src/'
