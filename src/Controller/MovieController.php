@@ -13,12 +13,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class MovieController extends AbstractController
 {
     public function __construct(
         private readonly MovieRepository          $movieRepository,
         private readonly OmdbApiConsumerInterface $omdbApiConsumer,
+        private readonly SluggerInterface         $slugger,
     )
     {
     }
@@ -51,7 +53,7 @@ class MovieController extends AbstractController
             $movie = Movie::fromEntity($this->movieRepository->getBySlug($slug));
         } catch (DoctrineNoResultException $doctrineNotFound) {
             try {
-                $movie = Movie::fromOmdbResult($this->omdbApiConsumer->getById($slug));
+                $movie = Movie::fromOmdbResult($this->omdbApiConsumer->getById($slug), $this->slugger);
             } catch (OmdbNoResultException $omdbNotFound) {
                 throw $this->createNotFoundException('Movie not found', previous: $omdbNotFound);
             }

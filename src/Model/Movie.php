@@ -8,6 +8,7 @@ use App\Entity\Genre as GenreEntity;
 use App\Entity\Movie as MovieEntity;
 use App\Omdb\Client\OmdbApiConsumerInterface;
 use DateTimeImmutable;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use function array_map;
 use function explode;
 use function str_starts_with;
@@ -51,10 +52,10 @@ final class Movie
     /**
      * @param OmdbMovieResult $movieOmdb
      */
-    public static function fromOmdbResult(array $movieOmdb): self
+    public static function fromOmdbResult(array $movieOmdb, SluggerInterface $slugger): self
     {
         return new self(
-            slug: $movieOmdb['Title'],
+            slug: $slugger->slug($movieOmdb['Title'])->toString(),
             title: $movieOmdb['Title'],
             plot: $movieOmdb['Plot'],
             releasedAt: new DateTimeImmutable($movieOmdb['Released']),

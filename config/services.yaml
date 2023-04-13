@@ -21,7 +21,5 @@ services:
     App\Validator\Constraints\:
         resource: '../src/Validator/Constraints/**/*Validator.php'
 
-when@dev:
-    services:
-        App\DataFixtures\:
-            resource: '../src/DataFixtures/'
+    App\DataFixtures\:
+        resource: '../src/DataFixtures/'
