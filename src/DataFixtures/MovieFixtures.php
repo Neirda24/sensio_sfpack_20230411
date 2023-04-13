@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Genre;
 use App\Entity\Movie;
+use App\Model\Rated;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -20,7 +21,7 @@ class MovieFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * @var list<array{slug: string, title: string, plot: string, releasedAt: string, poster: string, genres: list<string>}>
+     * @var list<array{title: string, plot: string, releasedAt: string, poster: string, genres: list<string>, rated: Rated}>
      */
     private const MOVIES = [
         [
@@ -30,6 +31,7 @@ Sous sa forme d'avatar, Jake peut de nouveau marcher. On lui confie une mission 
             'releasedAt' => '16/12/2009',
             'poster' => 'avatar.webp',
             'genres' => ['Action', 'Adventure', 'Fantasy'],
+            'rated' => Rated::GeneralAudiences,
         ],
         [
             'title' => 'Astérix et Obélix : Mission Cléopâtre',
@@ -38,6 +40,7 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
             'releasedAt' => '30/01/2002',
             'poster' => 'mission-cleopatre.jpg',
             'genres' => ['Documentary', 'Adventure', 'Comedy', 'Family'],
+            'rated' => Rated::GeneralAudiences,
         ],
     ];
 
@@ -55,7 +58,9 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
                 ->setSlug($this->slugger->slug($movieData['title'])->toString())
                 ->setTitle($movieData['title'])
                 ->setPoster($movieData['poster'])
-                ->setPlot($movieData['plot']);
+                ->setPlot($movieData['plot'])
+                ->setRated($movieData['rated'])
+            ;
 
             $releasedAt = DateTimeImmutable::createFromFormat('!d/m/Y', $movieData['releasedAt']);
 
