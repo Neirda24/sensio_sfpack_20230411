@@ -14,14 +14,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MovieController extends AbstractController
 {
+    public function __construct(
+        private readonly MovieRepository $movieRepository,
+    )
+    {
+    }
+
     #[Route(
         '/movies',
         name: 'movie_list',
         methods: ['GET']
     )]
-    public function list(MovieRepository $movieRepository): Response
+    public function list(): Response
     {
-        $movies = Movie::fromEntities($movieRepository->listAll());
+        $movies = Movie::fromEntities($this->movieRepository->listAll());
 
         return $this->render('movie/list.html.twig', [
             'movies' => $movies,
@@ -36,10 +42,10 @@ class MovieController extends AbstractController
         ],
         methods: ['GET']
     )]
-    public function details(MovieRepository $movieRepository, string $slug): Response
+    public function details(string $slug): Response
     {
         try {
-            $movie = Movie::fromEntity($movieRepository->getBySlug($slug));
+            $movie = Movie::fromEntity($this->movieRepository->getBySlug($slug));
         } catch (NoResultException $e) {
             throw $this->createNotFoundException('Movie not found', previous: $e);
         }
@@ -63,13 +69,13 @@ class MovieController extends AbstractController
         ],
         methods: ['GET', 'POST']
     )]
-    public function newOrEdit(Request $request, MovieRepository $movieRepository, ?string $slug = null): Response
+    public function newOrEdit(Request $request, ?string $slug = null): Response
     {
         $movieEntity = new MovieEntity();
 
         if (null !== $slug) {
             try {
-                $movieEntity = $movieRepository->getBySlug($slug);
+                $movieEntity = $this->movieRepository->getBySlug($slug);
             } catch (NoResultException $e) {
                 throw $this->createNotFoundException('Movie not found', previous: $e);
             }
@@ -79,7 +85,7 @@ class MovieController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $movieRepository->save($movieEntity, true);
+            $this->movieRepository->save($movieEntity, true);
 
             return $this->redirectToRoute('movie_details', ['slug' => $movieEntity->getSlug()]);
         }

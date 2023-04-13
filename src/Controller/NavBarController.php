@@ -9,9 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class NavBarController extends AbstractController
 {
-    public function __invoke(MovieRepository $movieRepository, string $currentRoute, ?string $currentSlug): Response
+    public function __construct(
+        private readonly MovieRepository $movieRepository,
+    )
     {
-        $movies = Movie::fromEntities($movieRepository->listAll());
+    }
+
+    public function __invoke(string $currentRoute, ?string $currentSlug): Response
+    {
+        $movies = Movie::fromEntities($this->movieRepository->listAll());
 
         return $this->render('navbar.html.twig', [
             'movies' => $movies,
