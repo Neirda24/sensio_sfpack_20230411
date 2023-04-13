@@ -23,6 +23,11 @@ final class NoResultException extends Exception implements HttpExceptionInterfac
         return new self("No movie found on OMDB API for IMDB ID '{$imdbId}'.", $previous);
     }
 
+    public static function searchingForTitle(string $title, ?Throwable $previous = null): self
+    {
+        return new self("No search results found on OMDB API for title '{$title}'.", $previous);
+    }
+
     public function getStatusCode(): int
     {
         return Response::HTTP_NOT_FOUND;

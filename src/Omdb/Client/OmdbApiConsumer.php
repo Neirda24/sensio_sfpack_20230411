@@ -10,6 +10,7 @@ use function array_key_exists;
 
 /**
  * @phpstan-import-type OmdbMovieResult from OmdbApiConsumerInterface
+ * @phpstan-import-type OmdbMovieSearchResults from OmdbApiConsumerInterface
  */
 final class OmdbApiConsumer implements OmdbApiConsumerInterface
 {
@@ -41,5 +42,30 @@ final class OmdbApiConsumer implements OmdbApiConsumerInterface
         }
 
         return $result;
+    }
+
+    public function searchByTitle(string $title): array
+    {
+        $response = $this->omdbApiClient->request('GET', '/', [
+            'query' => [
+                'type' => 'movie',
+                'r' => 'json',
+                'page' => '1',
+                's' => $title,
+            ],
+        ]);
+
+        try {
+            /** @var OmdbMovieSearchResults $result */
+            $result = $response->toArray(true);
+        } catch (Throwable $throwable) {
+            throw NoResultException::searchingForTitle($title, $throwable);
+        }
+
+        if (array_key_exists('Response', $result) === true && 'False' === $result['Response']) {
+            throw NoResultException::forId($title);
+        }
+
+        return $result['Search'];
     }
 }
