@@ -1,11 +1,12 @@
 parameters:
+    app.movies.poster_path: '%kernel.project_dir%/assets/images/movies'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         bind:
-            string $posterAssetsPath: '%kernel.project_dir%/assets/images/movies'
+            string $posterAssetsPath: '%app.movies.poster_path%'
 
     App\:
         resource: '../src/'
