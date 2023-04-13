@@ -23,3 +23,10 @@ services:
 
     App\DataFixtures\:
         resource: '../src/DataFixtures/'
+
+    # ------
+
+    App\Omdb\Client\OmdbApiConsumerInterface: '@App\Omdb\Client\OmdbApiConsumer'
+
+    App\Omdb\Bridge\AutomaticDatabaseImporter:
+        decorates: 'App\Omdb\Client\OmdbApiConsumerInterface'

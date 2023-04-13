@@ -89,14 +89,17 @@ class OmdbMoviesImportCommand extends Command
         if (count($moviesImported) > 0) {
             $verb = false === $isDryRun ? 'were' : 'would be';
             $io->success("These movies {$verb} imported :");
-            $io->table(['ID', 'Search Query', 'Title'], array_reduce($moviesImported, static function (array $rows, array $movieImported): array {
-                /** @var MovieEntity $movie */
-                [$idOrTitle, $movie] = $movieImported;
+            $io->table(
+                ['ID', 'Search Query', 'Title'],
+                array_reduce($moviesImported, static function (array $rows, array $movieImported): array {
+                    /** @var MovieEntity $movie */
+                    [$idOrTitle, $movie] = $movieImported;
 
-                $rows[] = [$movie->getId(), $idOrTitle, "{$movie->getTitle()}"];
+                    $rows[] = [$movie->getId(), $idOrTitle, "{$movie->getTitle()} ({$movie->getYear()})"];
 
-                return $rows;
-            }, []));
+                    return $rows;
+                }, [])
+            );
         }
 
         if (count($moviesFailed) > 0) {
