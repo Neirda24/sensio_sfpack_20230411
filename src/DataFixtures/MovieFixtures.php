@@ -5,17 +5,17 @@ namespace App\DataFixtures;
 use App\Entity\Genre;
 use App\Entity\Movie;
 use App\Model\Rated;
+use App\Repository\MovieRepository;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use LogicException;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class MovieFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
-        private readonly SluggerInterface $slugger,
+        private readonly MovieRepository $movieRepository,
     )
     {
     }
@@ -55,12 +55,10 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
     {
         foreach (self::MOVIES as $movieData) {
             $movie = (new Movie())
-                ->setSlug($this->slugger->slug($movieData['title'])->toString())
                 ->setTitle($movieData['title'])
                 ->setPoster($movieData['poster'])
                 ->setPlot($movieData['plot'])
-                ->setRated($movieData['rated'])
-            ;
+                ->setRated($movieData['rated']);
 
             $releasedAt = DateTimeImmutable::createFromFormat('!d/m/Y', $movieData['releasedAt']);
 
@@ -74,10 +72,10 @@ Celui-ci, conscient du défi à relever, cherche de l'aide auprès de son vieil 
                 $movie->addGenre($this->getGenre($genreName));
             }
 
-            $manager->persist($movie);
+            $this->movieRepository->save($movie, false);
         }
 
-        $manager->flush();
+        $this->movieRepository->flush();
     }
 
     private function getGenre(string $genreName): Genre

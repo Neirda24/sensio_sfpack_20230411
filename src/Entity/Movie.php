@@ -128,6 +128,11 @@ class Movie
         return $this;
     }
 
+    public function getYear(): string
+    {
+        return $this->getReleasedAt()->format('Y');
+    }
+
     /**
      * @return Collection<int, Genre>
      */
@@ -162,5 +167,10 @@ class Movie
         $this->rated = $rated;
 
         return $this;
+    }
+
+    public function getSluggable(): string
+    {
+        return "{$this->getTitle()} ({$this->getYear()})";
     }
 }

@@ -56,11 +56,13 @@ final class Movie
      */
     public static function fromOmdbResult(array $movieOmdb, SluggerInterface $slugger): self
     {
+        $releasedAt = new DateTimeImmutable($movieOmdb['Released']);
+
         return new self(
-            slug: $slugger->slug($movieOmdb['Title'])->toString(),
+            slug: $slugger->slug("{$movieOmdb['Title']} ({$releasedAt->format('Y')})")->toString(),
             title: $movieOmdb['Title'],
             plot: $movieOmdb['Plot'],
-            releasedAt: new DateTimeImmutable($movieOmdb['Released']),
+            releasedAt: $releasedAt,
             poster: $movieOmdb['Poster'],
             genres: explode(', ', $movieOmdb['Genre']),
             rated: Rated::tryFrom($movieOmdb['Rated']) ?? Rated::GeneralAudiences
