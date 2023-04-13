@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Movie as MovieEntity;
 use App\Form\MovieType;
 use App\Model\Movie;
+use App\Omdb\Client\NoResultException as OmdbNoResultException;
+use App\Omdb\Client\OmdbApiConsumerInterface;
 use App\Repository\MovieRepository;
-use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class MovieController extends AbstractController
 {
     public function __construct(
-        private readonly MovieRepository $movieRepository,
+        private readonly MovieRepository          $movieRepository,
+        private readonly OmdbApiConsumerInterface $omdbApiConsumer,
     )
     {
     }
@@ -46,8 +49,12 @@ class MovieController extends AbstractController
     {
         try {
             $movie = Movie::fromEntity($this->movieRepository->getBySlug($slug));
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException('Movie not found', previous: $e);
+        } catch (DoctrineNoResultException $doctrineNotFound) {
+            try {
+                $movie = Movie::fromOmdbResult($this->omdbApiConsumer->getById($slug));
+            } catch (OmdbNoResultException $omdbNotFound) {
+                throw $this->createNotFoundException('Movie not found', previous: $omdbNotFound);
+            }
         }
 
         return $this->render('movie/details.html.twig', [
@@ -76,7 +83,7 @@ class MovieController extends AbstractController
         if (null !== $slug) {
             try {
                 $movieEntity = $this->movieRepository->getBySlug($slug);
-            } catch (NoResultException $e) {
+            } catch (DoctrineNoResultException $e) {
                 throw $this->createNotFoundException('Movie not found', previous: $e);
             }
         }

@@ -6,10 +6,15 @@ namespace App\Model;
 
 use App\Entity\Genre as GenreEntity;
 use App\Entity\Movie as MovieEntity;
+use App\Omdb\Client\OmdbApiConsumerInterface;
 use DateTimeImmutable;
 use function array_map;
+use function explode;
 use function str_starts_with;
 
+/**
+ * @phpstan-import-type OmdbMovieResult from OmdbApiConsumerInterface
+ */
 final class Movie
 {
     public const SLUG_REGEX = '[a-zA-Z0-9-_]{3,}';
@@ -24,7 +29,8 @@ final class Movie
         public readonly DateTimeImmutable $releasedAt,
         public readonly string            $poster,
         public readonly array             $genres,
-    ) {
+    )
+    {
     }
 
     public static function fromEntity(MovieEntity $movieEntity): self
@@ -39,6 +45,21 @@ final class Movie
                 fn(GenreEntity $genreEntity): string => $genreEntity->getName(),
                 $movieEntity->getGenres()->toArray(),
             )
+        );
+    }
+
+    /**
+     * @param OmdbMovieResult $movieOmdb
+     */
+    public static function fromOmdbResult(array $movieOmdb): self
+    {
+        return new self(
+            slug: $movieOmdb['Title'],
+            title: $movieOmdb['Title'],
+            plot: $movieOmdb['Plot'],
+            releasedAt: new DateTimeImmutable($movieOmdb['Released']),
+            poster: $movieOmdb['Poster'],
+            genres: explode(', ', $movieOmdb['Genre'])
         );
     }
 
