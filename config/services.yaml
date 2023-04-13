@@ -21,9 +21,6 @@ services:
     App\Validator\Constraints\:
         resource: '../src/Validator/Constraints/**/*Validator.php'
 
-    App\DataFixtures\:
-        resource: '../src/DataFixtures/'
-
     # ------
 
     App\Omdb\Client\OmdbApiConsumerInterface: '@App\Omdb\Client\OmdbApiConsumer'
