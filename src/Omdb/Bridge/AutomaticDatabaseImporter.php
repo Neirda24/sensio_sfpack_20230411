@@ -9,6 +9,7 @@ use App\Omdb\Client\OmdbApiConsumerInterface;
 final class AutomaticDatabaseImporter implements OmdbApiConsumerInterface
 {
     public function __construct(
+        private readonly AutomaticDatabaseImporterConfig $config,
         private readonly OmdbApiConsumerInterface        $omdbApiConsumer,
         private readonly OmdbToDatabaseImporterInterface $omdbToDatabaseImporter,
     )
@@ -19,7 +20,9 @@ final class AutomaticDatabaseImporter implements OmdbApiConsumerInterface
     {
         $toImport = $this->omdbApiConsumer->getById($imdbId);
 
-        $this->omdbToDatabaseImporter->importFromApiData($toImport, true);
+        if ($this->config->getValue() === true) {
+            $this->omdbToDatabaseImporter->importFromApiData($toImport, true);
+        }
 
         return $toImport;
     }
