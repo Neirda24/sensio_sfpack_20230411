@@ -8,6 +8,7 @@ use App\Model\Movie;
 use App\Omdb\Client\NoResultException as OmdbNoResultException;
 use App\Omdb\Client\OmdbApiConsumerInterface;
 use App\Repository\MovieRepository;
+use App\Security\Voter\MovieVoter;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,6 +59,8 @@ class MovieController extends AbstractController
                 throw $this->createNotFoundException('Movie not found', previous: $omdbNotFound);
             }
         }
+
+        $this->denyAccessUnlessGranted(MovieVoter::VIEW_DETAILS, $movie);
 
         return $this->render('movie/details.html.twig', [
             'movie' => $movie,
