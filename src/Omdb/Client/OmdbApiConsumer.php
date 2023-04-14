@@ -63,7 +63,7 @@ final class OmdbApiConsumer implements OmdbApiConsumerInterface
         }
 
         if (array_key_exists('Response', $result) === true && 'False' === $result['Response']) {
-            throw NoResultException::forId($title);
+            throw NoResultException::searchingForTitle($title);
         }
 
         return $result['Search'];
