@@ -2,16 +2,10 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Genre;
-use App\Entity\Movie;
 use App\Entity\User;
-use App\Model\Rated;
-use App\Repository\MovieRepository;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use LogicException;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
@@ -46,7 +40,7 @@ class UserFixtures extends Fixture
 
     public function __construct(
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
-        private readonly ClockInterface $clock,
+        private readonly ClockInterface                 $clock,
     )
     {
     }
@@ -60,8 +54,7 @@ class UserFixtures extends Fixture
                 ->setDateOfBirth(DateTimeImmutable::createFromFormat(
                     '!d/m/Y',
                     "{$userData['dateOfBirth']}/{$this->clock->now()->modify("-{$userData['age']} years")->format('Y')}"
-                ))
-            ;
+                ));
 
             if (true === $userData['admin']) {
                 $user->setRoles(['ROLE_ADMIN']);
