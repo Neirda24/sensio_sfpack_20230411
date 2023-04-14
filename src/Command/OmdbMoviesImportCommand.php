@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Movie as MovieEntity;
-use App\Omdb\Bridge\AutomaticDatabaseImporterConfig;
 use App\Omdb\Bridge\OmdbToDatabaseImporterInterface;
 use App\Omdb\Client\NoResultException;
 use App\Omdb\Client\OmdbApiConsumerInterface;
@@ -33,7 +32,6 @@ class OmdbMoviesImportCommand extends Command
     public function __construct(
         private readonly OmdbApiConsumerInterface        $omdbApiConsumer,
         private readonly OmdbToDatabaseImporterInterface $omdbToDatabaseImporter,
-        private readonly AutomaticDatabaseImporterConfig $automaticDatabaseImporterConfig,
         private readonly MovieRepository                 $movieRepository,
     )
     {
@@ -62,8 +60,6 @@ class OmdbMoviesImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->automaticDatabaseImporterConfig->skip();
-
         $io = new SymfonyStyle($input, $output);
 
         $io->title('OMDB Import');
@@ -111,8 +107,6 @@ class OmdbMoviesImportCommand extends Command
             $io->error('Those search terms could not be found or were skipped :');
             $io->listing($moviesFailed);
         }
-
-        $this->automaticDatabaseImporterConfig->restore();
 
         return Command::SUCCESS;
     }
