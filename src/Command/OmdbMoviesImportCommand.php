@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function array_key_first;
 use function array_reduce;
@@ -107,7 +108,7 @@ class OmdbMoviesImportCommand extends Command
         }
 
         if (count($moviesFailed) > 0) {
-            $io->error('Those search terms could not be found :');
+            $io->error('Those search terms could not be found or were skipped :');
             $io->listing($moviesFailed);
         }
 
@@ -128,6 +129,13 @@ class OmdbMoviesImportCommand extends Command
         try {
             $result = $this->omdbApiConsumer->getById($imdbId);
         } catch (NoResultException) {
+            return null;
+        }
+
+        $acceptImport = $io->askQuestion(new ConfirmationQuestion("Do you wish to import {$result['Title']} ({$result['Year']}) ?", true));
+
+        if (false === $acceptImport) {
+            $io->warning('   >>> Skipping');
             return null;
         }
 
@@ -157,7 +165,13 @@ class OmdbMoviesImportCommand extends Command
             $selectedChoice = array_key_first($choices);
             $io->info("'{$selectedChoice}' is the only result. Selecting.");
         } else {
+            $choices['none'] = 'None of the above.';
             $selectedChoice = $io->choice('Which movie would you like to import ?', $choices);
+
+            if ('none' === $selectedChoice) {
+                $io->warning('   >>> Skipping');
+                return null;
+            }
         }
 
         return $this->tryImportAsImdbId($io, $selectedChoice);
