@@ -24,7 +24,7 @@ class MovieVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return self::VIEW_DETAILS === $attribute
-            && $subject instanceof Movie;
+            && ($subject instanceof Movie || $this->security->isGranted('ROLE_ADMIN'));
     }
 
     /**
@@ -32,9 +32,7 @@ class MovieVoter extends Voter
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
-        $minAgeRequired = $subject->rated->minAgeRequired();
-
-        if (0 === $minAgeRequired) {
+        if ($subject instanceof Movie && $subject->rated->minAgeRequired() === 0) {
             return true;
         }
 
@@ -48,6 +46,10 @@ class MovieVoter extends Voter
             return true;
         }
 
-        return $user->isOlderThanOrEqual($minAgeRequired, $this->clock->now());
+        if (!$subject instanceof Movie) {
+            return false;
+        }
+
+        return $user->isOlderThanOrEqual($subject->rated->minAgeRequired(), $this->clock->now());
     }
 }

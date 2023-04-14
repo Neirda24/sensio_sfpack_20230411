@@ -9,10 +9,15 @@
         <div class="row py-lg-5">
             <div class="col-lg-6 col-md-8 mx-auto">
                 <h1 class="fw-light">My Gallery</h1>
-                <p class="lead text-muted">You can find the list of movies here. Try clicking on one of them to see more details.</p>
+                {% if is_granted('MOVIE_VIEW_DETAILS') %}
+                    <p class="lead text-muted">You can find the list of movies here. Try clicking on one of them to see more details.</p>
+                {% elseif is_granted('IS_AUTHENTICATED') %}
+                    <p class="lead text-muted">You can try to click but it will show a 403</p>
+                {% else %}
+                    <p class="lead text-muted">You must log in first</p>
+                {% endif %}
                 <p>
                     <a href="{{ path('movie_new') }}" class="btn btn-primary my-2">Add a movie</a>
-{#                    <a href="#" class="btn btn-secondary my-2">Secondary action</a> #}
                 </p>
             </div>
         </div>
