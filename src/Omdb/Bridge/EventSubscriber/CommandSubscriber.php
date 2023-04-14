@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace App\Omdb\Bridge\EventSubscriber;
 
 use App\Omdb\Bridge\AutomaticDatabaseImporterConfig;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
