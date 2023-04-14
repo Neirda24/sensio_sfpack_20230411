@@ -14,16 +14,18 @@ services:
             - '../src/DataFixtures/'
             - '../src/DependencyInjection/'
             - '../src/Entity/'
+            - '../src/EventSubscriber/'
             - '../src/Model/'
             - '../src/Validator/Constraints/'
             - '../src/Kernel.php'
 
-    App\Validator\Constraints\:
-        resource: '../src/Validator/Constraints/**/*Validator.php'
-
-    # ------
+    App\EventSubscriber\:
+        resource: '../src/EventSubscriber/**/*Subscriber.php'
 
     App\Omdb\Client\OmdbApiConsumerInterface: '@App\Omdb\Client\OmdbApiConsumer'
 
     App\Omdb\Bridge\AutomaticDatabaseImporter:
         decorates: 'App\Omdb\Client\OmdbApiConsumerInterface'
+
+    App\Validator\Constraints\:
+        resource: '../src/Validator/Constraints/**/*Validator.php'

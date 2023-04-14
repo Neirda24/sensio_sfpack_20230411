@@ -3,10 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\EventSubscriber\MovieAddedEvent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use function debug_backtrace;
 
 /**
  * @extends ServiceEntityRepository<Movie>
@@ -18,7 +19,11 @@ use function debug_backtrace;
  */
 class MovieRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly SluggerInterface $slugger)
+    public function __construct(
+        ManagerRegistry                           $registry,
+        private readonly SluggerInterface         $slugger,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    )
     {
         parent::__construct($registry, Movie::class);
     }
@@ -31,6 +36,7 @@ class MovieRepository extends ServiceEntityRepository
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            $this->eventDispatcher->dispatch(new MovieAddedEvent($entity));
         }
     }
 
@@ -49,8 +55,7 @@ class MovieRepository extends ServiceEntityRepository
 
         $qb
             ->andWhere($qb->expr()->eq('movie.slug', ':slug'))
-            ->setParameter('slug', $slug)
-        ;
+            ->setParameter('slug', $slug);
 
         return $qb->getQuery()->getSingleResult();
     }
@@ -64,8 +69,7 @@ class MovieRepository extends ServiceEntityRepository
 
         $qb
             ->leftJoin('movie.genres', 'genre')
-            ->addSelect('genre')
-        ;
+            ->addSelect('genre');
 
         return $qb->getQuery()->getResult();
     }

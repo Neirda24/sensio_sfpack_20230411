@@ -16,6 +16,13 @@ class UserFixtures extends Fixture
      */
     private const USERS = [
         [
+            'username' => 'otherAdmin',
+            'password' => 'otherAdmin',
+            'dateOfBirth' => '05/08',
+            'age' => 31,
+            'admin' => true,
+        ],
+        [
             'username' => 'adrien',
             'password' => 'adrien',
             'dateOfBirth' => '15/05',

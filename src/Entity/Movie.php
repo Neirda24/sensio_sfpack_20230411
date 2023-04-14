@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -26,11 +27,10 @@ class Movie
 
     #[NotNull]
     #[Length(min: 3, max: 255)]
+    #[Choice(choices: ['new'], match: false)]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[NotNull]
-    #[Slug]
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
@@ -55,6 +55,7 @@ class Movie
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'movies')]
     private Collection $genres;
 
+    #[NotNull]
     #[ORM\Column(length: 10, enumType: Rated::class, options: ['default' => Rated::GeneralAudiences])]
     private ?Rated $rated = Rated::GeneralAudiences;
 
